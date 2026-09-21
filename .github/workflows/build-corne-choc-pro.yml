@@ -12,6 +12,7 @@ on:
           - 'AZERTY'
           - 'BEAKL15'
           - 'Colemak'
+          - 'ColemakDH'
           - 'ColemakDHK'
           - 'Dvorak'
           - 'Halmak'
