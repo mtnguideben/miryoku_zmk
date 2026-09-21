@@ -10,3 +10,12 @@
     zmk,matrix_transform = &default_transform;
   };
 };
+
+&{/keymap/BASE} {
+    sensor-bindings
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  slot 1 ┐ LEFT knob  → volume
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  slot 2 ┘
+        , <&inc_dec_kp PG_UP PG_DN>         // right slot 1 ┐ RIGHT knob → page up/dn
+        , <&inc_dec_kp PG_UP PG_DN>         // right slot 2 ┘
+        ;
+};
