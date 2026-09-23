@@ -9,13 +9,113 @@
   chosen {
     zmk,matrix_transform = &default_transform;
   };
+
+  // Encoder -> mouse scroll wheel (scroll, h-scroll, weapon swap).
+  // Mirrors the built-in inc_dec_kp, but forwards to &msc instead of &kp.
+  behaviors {
+    msc_enc: behavior_sensor_rotate_msc {
+      compatible = "zmk,behavior-sensor-rotate-var";
+      #sensor-binding-cells = <2>;
+      bindings = <&msc>, <&msc>;
+      tap-ms = <30>;
+    };
+  };
 };
 
+// --- Encoders (rotation only; the EC11 push is NOT wired on this board) ---
+// Sensor order = <left_ex1  left_ex2  right_ex1  right_ex2>.
+// One encoder per half, so both slots of a half get the same binding.
+//
+// Ergonomic pairing: LEFT-thumb layers free the RIGHT hand for the right knob;
+// RIGHT-thumb layers free the LEFT hand for the left knob.
+//
+//   Layer    Left knob            Right knob
+//   Base     Volume               vertical scroll
+//   Nav      Volume               horizontal scroll   (hold Space)
+//   Mouse    Volume               Undo / Redo         (hold Tab)
+//   Media    Volume               Tab cycle           (hold Esc)
+//   Num      Left / Right arrows  scroll              (hold Bspc)
+//   Sym      Display brightness   scroll              (hold Enter)
+//   Fun      Track prev/next      scroll              (hold Del)
+//   Extra    Volume               weapon swap (scroll)
 &{/keymap/BASE} {
     sensor-bindings
-        = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  slot 1 ┐ LEFT knob  → volume
-        , <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  slot 2 ┘
-        , <&inc_dec_kp PG_UP PG_DN>         // right slot 1 ┐ RIGHT knob → page up/dn
-        , <&inc_dec_kp PG_UP PG_DN>         // right slot 2 ┘
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  -> Volume
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>       // right -> vertical scroll
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        ;
+};
+&{/keymap/NAV} {                             // right -> horizontal scroll
+    sensor-bindings
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
+        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
+        ;
+};
+&{/keymap/MOUSE} {                           // right -> Undo / Redo (dedicated keys)
+    sensor-bindings
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp K_UNDO K_AGAIN>
+        , <&inc_dec_kp K_UNDO K_AGAIN>
+        ;
+};
+&{/keymap/MEDIA} {                           // right -> Tab cycle
+    sensor-bindings
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp LC(LS(TAB)) LC(TAB)>
+        , <&inc_dec_kp LC(LS(TAB)) LC(TAB)>
+        ;
+};
+&{/keymap/NUM} {                             // left -> Left/Right arrows (also seeks video)
+    sensor-bindings
+        = <&inc_dec_kp LEFT RIGHT>
+        , <&inc_dec_kp LEFT RIGHT>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        ;
+};
+&{/keymap/SYM} {                             // left -> Display brightness
+    sensor-bindings
+        = <&inc_dec_kp C_BRI_DN C_BRI_UP>
+        , <&inc_dec_kp C_BRI_DN C_BRI_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        ;
+};
+&{/keymap/FUN} {                             // left -> Track prev/next
+    sensor-bindings
+        = <&inc_dec_kp C_PREV C_NEXT>
+        , <&inc_dec_kp C_PREV C_NEXT>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        ;
+};
+
+// --- EXTRA layer repurposed as a FPS gaming layer -------------------------
+// Alphas shifted one column RIGHT so W/A/S/D land on ring/middle/index and
+// the pinky column is free.  Left hand does everything; right hand on mouse.
+//
+//   ALT  Q  W  E  R  | G(nade)  Mute |  1  2  3  4  5
+//   CTRL A  S  D  F  |               |  6  7  8  9  0
+//   SHFT Z  X  C  V  |               | F5 F9  M  J  I
+//              ESC SPACE TAB  |  (none) (none) »Base
+&{/keymap/EXTRA} {
+    bindings = 
+        &none  &kp LALT   &kp Q     &kp W      &kp E   &kp R    &kp G    &kp C_MUTE  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &none
+        &none  &kp LCTRL  &kp A     &kp S      &kp D   &kp F    &none    &none       &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &none
+        &none  &kp LSHFT  &kp Z     &kp X      &kp C   &kp V             &kp F5   &kp F9   &kp M   &kp J   &kp I   &none
+                          &kp ESC   &kp SPACE  &kp TAB           &none    &none    &to 0
+    >;
+    // Left knob stays Volume; right knob = scroll wheel = weapon swap.
+    // Flip SCRL_DOWN/SCRL_UP if next/previous feels reversed in-game.
+    sensor-bindings
+        = <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&inc_dec_kp C_VOL_DN C_VOL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc SCRL_DOWN SCRL_UP>
         ;
 };
