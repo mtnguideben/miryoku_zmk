@@ -5,6 +5,12 @@
 #include "../miryoku/mapping/46/corne_v4.h"
 #include "../miryoku/miryoku.dtsi"
 
+// Scroll distance per encoder detent for the document-scroll knobs.
+// ZMK's default (SCRL_UP/DOWN) is only 10, which feels very slow on a knob.
+// Bump this if it's still slow, lower it if it's too jumpy.
+// Weapon-swap (gaming) intentionally keeps the default so it's 1 notch = 1 weapon.
+#define ENC_SCRL 60
+
 / {
   chosen {
     zmk,matrix_transform = &default_transform;
@@ -44,16 +50,16 @@
     sensor-bindings
         = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  -> Volume
         , <&inc_dec_kp C_VOL_DN C_VOL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>       // right -> vertical scroll
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>   // right -> vertical scroll
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
         ;
 };
 &{/keymap/NAV} {                             // right -> horizontal scroll
     sensor-bindings
         = <&inc_dec_kp C_VOL_DN C_VOL_UP>
         , <&inc_dec_kp C_VOL_DN C_VOL_UP>
-        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
-        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
+        , <&msc_enc MOVE_X(-ENC_SCRL) MOVE_X(ENC_SCRL)>
+        , <&msc_enc MOVE_X(-ENC_SCRL) MOVE_X(ENC_SCRL)>
         ;
 };
 &{/keymap/MOUSE} {                           // right -> Undo / Redo (dedicated keys)
@@ -76,24 +82,24 @@
     sensor-bindings
         = <&inc_dec_kp LEFT RIGHT>
         , <&inc_dec_kp LEFT RIGHT>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
         ;
 };
 &{/keymap/SYM} {                             // left -> Display brightness
     sensor-bindings
         = <&inc_dec_kp C_BRI_DN C_BRI_UP>
         , <&inc_dec_kp C_BRI_DN C_BRI_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
         ;
 };
 &{/keymap/FUN} {                             // left -> Track prev/next
     sensor-bindings
         = <&inc_dec_kp C_PREV C_NEXT>
         , <&inc_dec_kp C_PREV C_NEXT>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
+        , <&msc_enc MOVE_Y(-ENC_SCRL) MOVE_Y(ENC_SCRL)>
         ;
 };
 
