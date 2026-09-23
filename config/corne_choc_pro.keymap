@@ -38,6 +38,8 @@
 //   Sym      Display brightness   scroll              (hold Enter)
 //   Fun      Track prev/next      scroll              (hold Del)
 //   Extra    Volume               weapon swap (scroll)
+// Undo/Redo use dedicated HID keys (K_UNDO/K_AGAIN) - same as the Nav/Button
+// clipboard keys, so no Ctrl-vs-Cmd issue.  Tab-cycle uses Ctrl+Tab (both OSes).
 &{/keymap/BASE} {
     sensor-bindings
         = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  -> Volume
@@ -102,7 +104,7 @@
 //   ALT  Q  W  E  R  | G(nade)  Mute |  1  2  3  4  5
 //   CTRL A  S  D  F  |               |  6  7  8  9  0
 //   SHFT Z  X  C  V  |               | F5 F9  M  J  I
-//              ESC SPACE TAB  |  (none) (none) »Base
+//              ESC SPACE TAB  |  (none) (none) to-Base
 &{/keymap/EXTRA} {
     bindings = 
         &none  &kp LALT   &kp Q     &kp W      &kp E   &kp R    &kp G    &kp C_MUTE  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &none
