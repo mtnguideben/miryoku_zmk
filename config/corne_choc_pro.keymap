@@ -1,12 +1,14 @@
 // Copyright 2025 Manna Harbour
 // https://github.com/manna-harbour/miryoku
 
-// Encoder scroll speed.  ZMK's default scroll magnitude is 10, which is very
-// slow on a knob.  This overrides it for all SCRL_* codes (must come BEFORE the
-// includes so it wins over pointing.h's #ifndef default).  Raise if still slow,
-// lower if too fast.  This is global, so the gaming weapon-swap knob uses it too
-// (one detent is still one scroll event = one weapon in-game).
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 30
+// IMPORTANT: this needs SMOOTH scrolling OFF in the .conf
+//   CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=n   (keep CONFIG_ZMK_POINTING=y)
+// With smooth scrolling ON, the host treats the wheel as hi-res and divides
+// every unit to ~1/120 of a notch, which is why the knob crawled no matter how
+// high the value or dwell.  With it OFF, this value = wheel notches per tick.
+// msc_scrl (documents) dwells longer per detent than msc_enc (weapon swap).
+// Must be defined BEFORE the includes to beat pointing.h's default.
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 1
 
 #include "../miryoku/custom_config.h"
 #include "../miryoku/mapping/46/corne_v4.h"
@@ -17,14 +19,23 @@
     zmk,matrix_transform = &default_transform;
   };
 
-  // Encoder -> mouse scroll wheel (for weapon swap on the gaming layer).
-  // Mirrors the built-in inc_dec_kp, but forwards to &msc instead of &kp.
+  // Encoder -> mouse scroll.  &msc scrolls at a rate WHILE held, so more dwell
+  // (tap-ms) per detent = more scroll.  Two variants:
+  //   msc_scrl : long dwell  -> fast document scrolling
+  //   msc_enc  : short dwell -> ~one notch, for gaming weapon swap
+  // Raise msc_scrl's tap-ms if documents still scroll too slowly.
   behaviors {
+    msc_scrl: behavior_sensor_rotate_scroll {
+      compatible = "zmk,behavior-sensor-rotate-var";
+      #sensor-binding-cells = <2>;
+      bindings = <&msc>, <&msc>;
+      tap-ms = <50>;
+    };
     msc_enc: behavior_sensor_rotate_msc {
       compatible = "zmk,behavior-sensor-rotate-var";
       #sensor-binding-cells = <2>;
       bindings = <&msc>, <&msc>;
-      tap-ms = <30>;
+      tap-ms = <20>;
     };
   };
 };
@@ -51,16 +62,16 @@
     sensor-bindings
         = <&inc_dec_kp C_VOL_DN C_VOL_UP>   // left  -> Volume
         , <&inc_dec_kp C_VOL_DN C_VOL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>   // right -> vertical scroll
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>   // right -> vertical scroll
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
         ;
 };
 &{/keymap/NAV} {                             // right -> horizontal scroll
     sensor-bindings
         = <&inc_dec_kp C_VOL_DN C_VOL_UP>
         , <&inc_dec_kp C_VOL_DN C_VOL_UP>
-        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
-        , <&msc_enc SCRL_LEFT SCRL_RIGHT>
+        , <&msc_scrl SCRL_LEFT SCRL_RIGHT>
+        , <&msc_scrl SCRL_LEFT SCRL_RIGHT>
         ;
 };
 &{/keymap/MOUSE} {                           // right -> Undo / Redo (dedicated keys)
@@ -83,24 +94,24 @@
     sensor-bindings
         = <&inc_dec_kp LEFT RIGHT>
         , <&inc_dec_kp LEFT RIGHT>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
         ;
 };
 &{/keymap/SYM} {                             // left -> Display brightness
     sensor-bindings
         = <&inc_dec_kp C_BRI_DN C_BRI_UP>
         , <&inc_dec_kp C_BRI_DN C_BRI_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
         ;
 };
 &{/keymap/FUN} {                             // left -> Track prev/next
     sensor-bindings
         = <&inc_dec_kp C_PREV C_NEXT>
         , <&inc_dec_kp C_PREV C_NEXT>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
-        , <&msc_enc SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
+        , <&msc_scrl SCRL_DOWN SCRL_UP>
         ;
 };
 
