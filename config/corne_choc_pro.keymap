@@ -1,14 +1,14 @@
 // Copyright 2025 Manna Harbour
 // https://github.com/manna-harbour/miryoku
 
-// IMPORTANT: this needs SMOOTH scrolling OFF in the .conf
-//   CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=n   (keep CONFIG_ZMK_POINTING=y)
-// With smooth scrolling ON, the host treats the wheel as hi-res and divides
-// every unit to ~1/120 of a notch, which is why the knob crawled no matter how
-// high the value or dwell.  With it OFF, this value = wheel notches per tick.
+// SMOOTH scrolling build.  Requires in the .conf:
+//   CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y   (and CONFIG_ZMK_POINTING=y)
+// Smooth mode makes the wheel hi-res (~1/120 of a notch per unit), so this value
+// must be LARGE to feel normal - 120 is the starting point.  Raise for faster
+// glide, lower for slower.  (In plain notch mode this would be ~1.)
 // msc_scrl (documents) dwells longer per detent than msc_enc (weapon swap).
 // Must be defined BEFORE the includes to beat pointing.h's default.
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 1
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 120
 
 #include "../miryoku/custom_config.h"
 #include "../miryoku/mapping/46/corne_v4.h"
@@ -29,7 +29,7 @@
       compatible = "zmk,behavior-sensor-rotate-var";
       #sensor-binding-cells = <2>;
       bindings = <&msc>, <&msc>;
-      tap-ms = <50>;
+      tap-ms = <30>;
     };
     msc_enc: behavior_sensor_rotate_msc {
       compatible = "zmk,behavior-sensor-rotate-var";
