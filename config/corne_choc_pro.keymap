@@ -3,12 +3,14 @@
 
 // SMOOTH scrolling build.  Requires in the .conf:
 //   CONFIG_ZMK_POINTING_SMOOTH_SCROLLING=y   (and CONFIG_ZMK_POINTING=y)
-// Smooth mode makes the wheel hi-res (~1/120 of a notch per unit), so this value
-// must be LARGE to feel normal - 120 is the starting point.  Raise for faster
-// glide, lower for slower.  (In plain notch mode this would be ~1.)
-// msc_scrl (documents) dwells longer per detent than msc_enc (weapon swap).
+// NOTCH scrolling build (consistent across Linux + Mac, keeps gaming clean).
+// Requires in the .conf:  CONFIG_ZMK_POINTING=y  and NO smooth-scrolling line
+// (CONFIG_ZMK_POINTING_SMOOTH_SCROLLING must be OFF / removed).
+// In notch mode each unit is a normal wheel notch, so keep this value at 1.
+// Scroll SPEED is set by the dwell time below (msc_scrl's tap-ms): raise it for
+// faster document scrolling, lower it for slower.
 // Must be defined BEFORE the includes to beat pointing.h's default.
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 120
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 1
 
 #include "../miryoku/custom_config.h"
 #include "../miryoku/mapping/46/corne_v4.h"
@@ -29,7 +31,7 @@
       compatible = "zmk,behavior-sensor-rotate-var";
       #sensor-binding-cells = <2>;
       bindings = <&msc>, <&msc>;
-      tap-ms = <30>;
+      tap-ms = <40>;
     };
     msc_enc: behavior_sensor_rotate_msc {
       compatible = "zmk,behavior-sensor-rotate-var";
