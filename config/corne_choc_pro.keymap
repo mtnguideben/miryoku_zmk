@@ -39,6 +39,17 @@
       bindings = <&msc>, <&msc>;
       tap-ms = <20>;
     };
+    // Gaming hold-tap for the right-hand keys: tap = number/F-key, hold = letter.
+    // tap-preferred means a quick tap is ALWAYS the tap (never misfires to the
+    // letter from fast presses); you only get the letter by deliberately holding.
+    // Usage is <hold> <tap>, e.g. &ght Y N1 = tap 1, hold Y.
+    ght: game_hold_tap {
+      compatible = "zmk,behavior-hold-tap";
+      #binding-cells = <2>;
+      flavor = "tap-preferred";
+      tapping-term-ms = <180>;
+      bindings = <&kp>, <&kp>;
+    };
   };
 };
 
@@ -118,20 +129,22 @@
 };
 
 // --- EXTRA layer repurposed as a FPS gaming layer -------------------------
-// Alphas shifted one column RIGHT so W/A/S/D land on ring/middle/index and
-// the pinky column is free.  Left hand does everything; right hand stays on
-// the mouse.  Positions are the raw 46-key matrix (default_transform).
+// Left hand = instant FPS controls (movement cluster never touched).
+// Right hand (off the mouse) uses hold-taps to reach the whole alphabet:
+// TAP = number / F-key, HOLD = the letter.  &ght is <hold> <tap>.
+// Knob buttons: left = G (grenade); right = Mute/T (tap Mute, hold T).
+// Right knob turn = weapon swap.
 //
-//   ALT  Q  W  E  R  | G(nade)  Mute |  1  2  3  4  5
-//   CTRL A  S  D  F  |               |  6  7  8  9  0
-//   SHFT Z  X  C  V  |               | F5 F9  M  J  I
-//              ESC SPACE TAB  |  (none) (none) to-Base
+//   ALT  Q W E R  | G  Mu/T |  1/Y  2/U  3/I  4/O  5/P
+//   CTRL A S D F  |         |  6/H  7/J  8/K  9/L  0/;
+//   SHFT Z X C V  |         | F1/B F2/N F3/M F11/, F12/.
+//              ESC SPACE TAB  |  F5  F9  to-Base
 &{/keymap/EXTRA} {
     bindings = <
-        &none &kp LALT &kp Q &kp W &kp E &kp R &kp G &kp C_MUTE &kp N1 &kp N2 &kp N3 &kp N4 &kp N5 &none
-        &none &kp LCTRL &kp A &kp S &kp D &kp F &none &none &kp N6 &kp N7 &kp N8 &kp N9 &kp N0 &none
-        &none &kp LSHFT &kp Z &kp X &kp C &kp V &kp F5 &kp F9 &kp M &kp J &kp I &none
-        &kp ESC &kp SPACE &kp TAB &none &none &to 0
+        &none &kp LALT &kp Q &kp W &kp E &kp R   &kp G &ght T C_MUTE     &ght Y N1 &ght U N2 &ght I N3 &ght O N4 &ght P N5 &none
+        &none &kp LCTRL &kp A &kp S &kp D &kp F   &none &none     &ght H N6 &ght J N7 &ght K N8 &ght L N9 &ght SEMI N0 &none
+        &none &kp LSHFT &kp Z &kp X &kp C &kp V             &ght B F1 &ght N F2 &ght M F3 &ght COMMA F11 &ght DOT F12 &none
+        &kp ESC &kp SPACE &kp TAB   &kp F5 &kp F9 &to 0
     >;
     // Left knob stays Volume; right knob becomes scroll wheel = weapon swap.
     // Flip SCRL_DOWN/SCRL_UP if next/previous feels reversed in-game.
